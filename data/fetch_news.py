@@ -5,7 +5,7 @@ API_KEY = "pub_81778ff313c3af6637656d4c5dc937fd80900"
 def get_news(city):
     url = "https://newsdata.io/api/1/news"
     params = {
-        'apikey': pub_81778ff313c3af6637656d4c5dc937fd80900,
+        'apikey': 'pub_81778ff313c3af6637656d4c5dc937fd80900',
         'q': city,
         'language': 'en',
         'category': 'top'

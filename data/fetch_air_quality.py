@@ -8,7 +8,7 @@ def get_air_quality(city, state, country):
         'city': city,
         'state': state,
         'country': country,
-        'key': API_KEY
+        'key': 'd95597e0-5fa3-49a7-b591-b2191eba2df4'
     }
 
     response = requests.get(url, params=params)

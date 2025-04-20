@@ -16,7 +16,7 @@ def get_traffic(city_name):
     bbox = CITIES[city_name]
     url = f"https://api.tomtom.com/traffic/services/5/incidentDetails"
     params = {
-        'key': 0nliiIgGihIG1OE3iOR6XoA0YbsKmt8X,
+        'key': '0nliiIgGihIG1OE3iOR6XoA0YbsKmt8X',
         'bbox': bbox,
         'fields': 'id,geometry,properties',
         'language': 'en',
