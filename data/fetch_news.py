@@ -1,11 +1,11 @@
 import requests
 
-API_KEY = "your_news_api_key_here"  # Replace with your News API key
+API_KEY = "pub_81778ff313c3af6637656d4c5dc937fd80900"
 
 def get_news(city):
     url = "https://newsdata.io/api/1/news"
     params = {
-        'apikey': API_KEY,
+        'apikey': pub_81778ff313c3af6637656d4c5dc937fd80900,
         'q': city,
         'language': 'en',
         'category': 'top'

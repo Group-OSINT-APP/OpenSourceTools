@@ -1,6 +1,6 @@
 import requests
 
-API_KEY = "your_api_key_here"  # Replace with your IQAir API key
+API_KEY = "d95597e0-5fa3-49a7-b591-b2191eba2df4"
 
 def get_air_quality(city, state, country):
     url = "https://api.airvisual.com/v2/city"

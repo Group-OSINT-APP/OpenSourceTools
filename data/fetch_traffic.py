@@ -1,6 +1,6 @@
 import requests
 
-API_KEY = "your_api_key_here"  # Replace with your TomTom API key
+API_KEY = "0nliiIgGihIG1OE3iOR6XoA0YbsKmt8X"
 
 # Example: Chicago bounding box (lat1,lon1,lat2,lon2)
 CITIES = {
@@ -16,7 +16,7 @@ def get_traffic(city_name):
     bbox = CITIES[city_name]
     url = f"https://api.tomtom.com/traffic/services/5/incidentDetails"
     params = {
-        'key': API_KEY,
+        'key': 0nliiIgGihIG1OE3iOR6XoA0YbsKmt8X,
         'bbox': bbox,
         'fields': 'id,geometry,properties',
         'language': 'en',
