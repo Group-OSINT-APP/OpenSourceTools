@@ -1,1 +1,3 @@
 # OpenSourceTools
+
+The SmartCity Insights Hub is a Python-based intelligent application that provides real-time data on weather, air quality, traffic, and local news through a clean, user-friendly graphical interface built with tkinter. Each data category is organized into its own tab, allowing users to input city-specific information and retrieve results via connected APIs. The application features interactive components such as progress bars during data fetching and formatted result displays. It supports modular backend integration, with separate Python scripts handling each data source. This design promotes clean architecture and easy maintenance.
