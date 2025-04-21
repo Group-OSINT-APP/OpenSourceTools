@@ -18,7 +18,7 @@ def get_news(city):
         if not articles:
             return {"error": f"No news found for {city}."}
 
-        headlines = [article["title"] for article in articles[:5]]
+        headlines = [article["title"] for article in articles[:10]]
         return {
             "city": city,
             "headlines": headlines

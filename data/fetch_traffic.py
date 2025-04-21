@@ -29,7 +29,7 @@ def get_traffic(city_name):
         incidents = data.get('incidents', [])
         parsed_incidents = []
 
-        for inc in incidents[:5]:  # Limit to top 5
+        for inc in incidents[:5]:  
             props = inc['properties']
             parsed_incidents.append(f"{props['eventCode']}: {props.get('description', 'No description')}")
 
