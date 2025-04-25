@@ -1,16 +1,17 @@
+# smart_city_app.py
 import tkinter as tk
 from tkinter import ttk
+import json
 from data.fetch_weather import get_weather
 from data.fetch_air_quality import get_air_quality
-from data.fetch_traffic import get_traffic
 from data.fetch_news import get_news
-
+from data.fetch_mapquest_traffic import get_mapquest_traffic_incidents, get_city_coordinates
 
 class SmartCityApp(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("🌆 SmartCity Insights Hub")
-        self.geometry("900x650")
+        self.geometry("950x700")
         self.configure(bg="#f0f2f5")
 
         self.set_theme()
@@ -32,8 +33,8 @@ class SmartCityApp(tk.Tk):
 
         self.create_tab("Weather Info")
         self.create_tab("Air Quality")
-        self.create_tab("Traffic Updates")
-        self.create_tab("News & Alerts")
+        self.create_tab("MapQuest Traffic")
+        self.create_tab("News & Alerts") 
 
     def create_tab(self, title):
         tab = ttk.Frame(self.tabs, padding=20)
@@ -52,7 +53,7 @@ class SmartCityApp(tk.Tk):
         result_label = tk.Label(
             tab, text="", justify="left", anchor="nw",
             font=("Segoe UI", 10), bg="#ffffff",
-            relief="solid", borderwidth=1, padx=10, pady=10, wraplength=700
+            relief="solid", borderwidth=1, padx=10, pady=10, wraplength=800
         )
         result_label.pack(pady=10, fill='both', expand=True)
 
@@ -80,7 +81,7 @@ class SmartCityApp(tk.Tk):
                 else:
                     display = (
                         f"📍 City: {result['city']}\n"
-                        f"🌡 Temperature: {result['temperature']}°C\n"
+                        f"🌡 Temperature: {result['temperature']}\u00b0C\n"
                         f"☁️ Weather: {result['description'].title()}\n"
                         f"💧 Humidity: {result['humidity']}%\n"
                         f"💨 Wind Speed: {result['wind_speed']} m/s"
@@ -94,9 +95,9 @@ class SmartCityApp(tk.Tk):
             input_state.insert(0, "Enter state")
             input_state.pack(pady=5)
 
-            input_country = ttk.Entry(tab, width=30)
-            input_country.insert(0, "Enter country")
-            input_country.pack(pady=5)
+            selected_country = tk.StringVar(value="USA")
+            country_dropdown = ttk.Combobox(tab, textvariable=selected_country, state="readonly", values=["USA"])
+            country_dropdown.pack(pady=5)
 
             def fetch_air():
                 show_loading()
@@ -105,7 +106,7 @@ class SmartCityApp(tk.Tk):
             def run_air():
                 city = input_city.get()
                 state = input_state.get()
-                country = input_country.get()
+                country = selected_country.get()
                 result = get_air_quality(city, state, country)
                 hide_loading()
                 if 'error' in result:
@@ -120,23 +121,40 @@ class SmartCityApp(tk.Tk):
 
             fetch_btn.config(command=fetch_air)
 
-        elif title == "Traffic Updates":
+        elif title == "MapQuest Traffic":
             def fetch_traffic():
                 show_loading()
                 self.after(100, run_traffic)
 
             def run_traffic():
                 city = input_city.get()
-                result = get_traffic(city)
-                hide_loading()
-                if 'error' in result:
-                    result_label.config(text=result['error'])
+
+                coordinates = get_city_coordinates(city)
+                if coordinates:
+                    lat, lng = coordinates
+                    radius = 0.05  # Adjust as needed
+                    bbox = f"{lat - radius},{lng - radius},{lat + radius},{lng + radius}"
+                    traffic_data = get_mapquest_traffic_incidents(bbox)
+                    hide_loading()
+                    if 'error' in traffic_data:
+                        result_label.config(text=traffic_data['error'])
+                    elif 'incidents' in traffic_data:
+                        display_text = f"🚦 Traffic Incidents near {city}:\n"
+                        if traffic_data['incidents']:
+                            for incident in traffic_data['incidents'][:5]:
+                                severity = incident.get('severity', 'N/A')
+                                short_desc = incident.get('shortDesc', 'No Description')
+                                lat_inc = incident.get('lat', 'N/A')
+                                lng_inc = incident.get('lng', 'N/A')
+                                display_text += f"\nSeverity: {severity}, Description: {short_desc}, Location: ({lat_inc:.4f}, {lng_inc:.4f})"
+                        else:
+                            display_text += "No traffic incidents reported in this area."
+                        result_label.config(text=display_text)
+                    else:
+                        result_label.config(text="Could not retrieve traffic incident data.")
                 else:
-                    display = (
-                        f"🚦 Traffic Incidents in {result['city']} ({result['count']} total):\n\n" +
-                        "\n".join(f"• {line}" for line in result['incidents'])
-                    )
-                    result_label.config(text=display)
+                    hide_loading()
+                    result_label.config(text=f"Could not find coordinates for '{city}'.")
 
             fetch_btn.config(command=fetch_traffic)
 
@@ -152,7 +170,6 @@ class SmartCityApp(tk.Tk):
                 if 'error' in result:
                     result_label.config(text=result['error'])
                 else:
-                    # Remove duplicates
                     seen = set()
                     unique_headlines = []
                     for headline in result['headlines']:
@@ -160,13 +177,11 @@ class SmartCityApp(tk.Tk):
                             unique_headlines.append(headline)
                             seen.add(headline)
 
-                    # Limit and format output
                     news_lines = [f"- {article}" for article in unique_headlines[:5]]
                     display = f"📰 Top News for {city}:\n" + "\n".join(news_lines)
                     result_label.config(text=display)
 
             fetch_btn.config(command=fetch_news_data)
-
 
 if __name__ == '__main__':
     app = SmartCityApp()
