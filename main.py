@@ -32,7 +32,7 @@ class SmartCityApp(tk.Tk):
 
         self.create_tab("Weather Info")
         self.create_tab("Air Quality")
-        self.create_tab("MapQuest Traffic")
+        self.create_tab("Traffic Incidents")
         self.create_tab("News & Alerts")
 
     def create_tab(self, title):
