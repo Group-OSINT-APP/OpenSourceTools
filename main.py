@@ -1,4 +1,3 @@
-# smart_city_app.py
 import tkinter as tk
 from tkinter import ttk
 import json
@@ -34,7 +33,7 @@ class SmartCityApp(tk.Tk):
         self.create_tab("Weather Info")
         self.create_tab("Air Quality")
         self.create_tab("MapQuest Traffic")
-        self.create_tab("News & Alerts") 
+        self.create_tab("News & Alerts")
 
     def create_tab(self, title):
         tab = ttk.Frame(self.tabs, padding=20)
@@ -128,11 +127,10 @@ class SmartCityApp(tk.Tk):
 
             def run_traffic():
                 city = input_city.get()
-
                 coordinates = get_city_coordinates(city)
                 if coordinates:
                     lat, lng = coordinates
-                    radius = 0.05  # Adjust as needed
+                    radius = 0.05
                     bbox = f"{lat - radius},{lng - radius},{lat + radius},{lng + radius}"
                     traffic_data = get_mapquest_traffic_incidents(bbox)
                     hide_loading()
@@ -141,12 +139,17 @@ class SmartCityApp(tk.Tk):
                     elif 'incidents' in traffic_data:
                         display_text = f"🚦 Traffic Incidents near {city}:\n"
                         if traffic_data['incidents']:
-                            for incident in traffic_data['incidents'][:5]:
+                            for incident in traffic_data['incidents'][:20]:
                                 severity = incident.get('severity', 'N/A')
                                 short_desc = incident.get('shortDesc', 'No Description')
-                                lat_inc = incident.get('lat', 'N/A')
-                                lng_inc = incident.get('lng', 'N/A')
-                                display_text += f"\nSeverity: {severity}, Description: {short_desc}, Location: ({lat_inc:.4f}, {lng_inc:.4f})"
+                                incident_type = incident.get('type', 'N/A')
+                                type_display = incident_type.title() if isinstance(incident_type, str) else str(incident_type)
+                                lat_inc = incident.get('lat', 0.0)
+                                lng_inc = incident.get('lng', 0.0)
+                                display_text += (
+                                    f"\nType: {type_display}, Severity: {severity}, "
+                                    f"Description: {short_desc}, Location: ({lat_inc:.4f}, {lng_inc:.4f})"
+                                )
                         else:
                             display_text += "No traffic incidents reported in this area."
                         result_label.config(text=display_text)
@@ -177,7 +180,7 @@ class SmartCityApp(tk.Tk):
                             unique_headlines.append(headline)
                             seen.add(headline)
 
-                    news_lines = [f"- {article}" for article in unique_headlines[:5]]
+                    news_lines = [f"- {article}" for article in unique_headlines[:15]]
                     display = f"📰 Top News for {city}:\n" + "\n".join(news_lines)
                     result_label.config(text=display)
 
