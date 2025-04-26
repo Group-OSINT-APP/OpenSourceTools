@@ -120,7 +120,7 @@ class SmartCityApp(tk.Tk):
 
             fetch_btn.config(command=fetch_air)
 
-        elif title == "MapQuest Traffic":
+        elif title == "Traffic Incidents":
             def fetch_traffic():
                 show_loading()
                 self.after(100, run_traffic)
@@ -130,7 +130,7 @@ class SmartCityApp(tk.Tk):
                 coordinates = get_city_coordinates(city)
                 if coordinates:
                     lat, lng = coordinates
-                    radius = 0.05
+                    radius = 0.3
                     bbox = f"{lat - radius},{lng - radius},{lat + radius},{lng + radius}"
                     traffic_data = get_mapquest_traffic_incidents(bbox)
                     hide_loading()
@@ -146,12 +146,16 @@ class SmartCityApp(tk.Tk):
                                 type_display = incident_type.title() if isinstance(incident_type, str) else str(incident_type)
                                 lat_inc = incident.get('lat', 0.0)
                                 lng_inc = incident.get('lng', 0.0)
+
                                 display_text += (
-                                    f"\nType: {type_display}, Severity: {severity}, "
-                                    f"Description: {short_desc}, Location: ({lat_inc:.4f}, {lng_inc:.4f})"
+                                    f"\n🛑 TYPE: {type_display}\n"
+                                    f"⚠️ SEVERITY: {severity}\n"
+                                    f"📝 DESCRIPTION: {short_desc}\n"
+                                    f"📍 LOCATION: ({lat_inc:.4f}, {lng_inc:.4f})\n"
+                                    f"{'-'*40}"
                                 )
                         else:
-                            display_text += "No traffic incidents reported in this area."
+                            display_text += "✅ No traffic incidents reported in this area."
                         result_label.config(text=display_text)
                     else:
                         result_label.config(text="Could not retrieve traffic incident data.")
